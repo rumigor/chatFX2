@@ -3,7 +3,9 @@ package server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class ClientHandler {
     Server server;
@@ -26,9 +28,9 @@ public class ClientHandler {
                     //цикл аутентификации
                     while (true) {
                         String str = in.readUTF();
-
-                        if (str.startsWith("/auth ")) {
+                        if (str.startsWith("/auth")) {
                             String[] token = str.split("\\s");
+                            System.out.println(Arrays.toString(token));
                             if (token.length < 3) {
                                 continue;
                             }
@@ -38,7 +40,7 @@ public class ClientHandler {
                             if (newNick != null) {
                                 sendMsg("/authok " + newNick);
                                 nick = newNick;
-                                login = token[1];
+                                login = token[2];
                                 server.subscribe(this);
                                 System.out.printf("Клиент %s подключился \n", nick);
                                 break;
@@ -47,20 +49,29 @@ public class ClientHandler {
                             }
                         }
 
-                        server.broadcastMsg(str);
+                        server.broadcastMsg(str, this);
                     }
                     //цикл работы
                     while (true) {
                         String str = in.readUTF();
                         String [] msg = str.split("\\s");
-                        if (msg[1].equals("/end")) {
+                        if (msg[0].equals("/end")) {
                             out.writeUTF("/end");
                             break;
                         }
-                        if (msg[1].equals("/w")) {
-                            server.privateMsg(msg[2], this,  msg[3]);
+                        if (msg[0].equals("/w") && msg.length >= 3) {
+                            String privateMsg = "";
+                            for (int i = 2; i < msg.length; i++) {
+                                privateMsg += msg[i] + " ";
+                            }
+                            server.privateMsg(msg[1], this,  privateMsg);
                         }
-                        server.broadcastMsg(str);
+                        else if (msg[0].equals("/chgnick")) {
+                            server.changeNick(this, msg[1]);
+                        }
+                        else {
+                            server.broadcastMsg(str, this);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -99,5 +110,9 @@ public class ClientHandler {
 
     public String getNick() {
         return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 }

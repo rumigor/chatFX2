@@ -140,7 +140,7 @@ public class Controller implements Initializable {
 
     public void sendMsg(ActionEvent actionEvent) {
         try {
-            out.writeUTF(nick + ": " + textField.getText());
+            out.writeUTF(textField.getText());
             textField.requestFocus();
             textField.clear();
         } catch (IOException e) {

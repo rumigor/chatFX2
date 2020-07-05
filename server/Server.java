@@ -49,9 +49,9 @@ public class Server {
         }
     }
 
-    void broadcastMsg(String msg){
+    void broadcastMsg(String msg, ClientHandler clientHandler){
         for (ClientHandler client : clients) {
-            client.sendMsg(msg);
+            client.sendMsg(clientHandler.getNick() + ": " + msg);
         }
     }
 
@@ -65,6 +65,7 @@ public class Server {
             for (ClientHandler anotherClient : clients) {
                 if (nickname.equals(anotherClient.getNick())) {
                     anotherClient.sendMsg("Сообщение от " + nickname + ": "+ msg);
+                    client.sendMsg("Вы приватно для " + anotherClient.getNick() + ": " + msg);
                     isNickNameValid = true;
                     break;
                 }
@@ -78,15 +79,19 @@ public class Server {
 
     public void subscribe(ClientHandler clientHandler){
         clients.add(clientHandler);
-        broadcastMsg(clientHandler.getNick() + " подключился к чату!");
-        privateMsg("cервера", clientHandler, "Добропожаловать в чат!\nДля смены ника направьте на сервер команду \"/chgnick NewNickName\n" +
+        broadcastMsg(clientHandler.getNick() + " подключился к чату!", clientHandler);
+        privateMsg("сервера", clientHandler, "Добропожаловать в чат!\nДля смены ника направьте на сервер команду \"/chgnick NewNickName\n" +
                 "Для отправки приватного сообщения перед текстом сообщения введите: /w usernickname");
 
     }
 
     public void unsubscribe(ClientHandler clientHandler){
-        broadcastMsg(clientHandler.getNick() + " вышел из чата");
+        broadcastMsg(clientHandler.getNick() + " вышел из чата", clientHandler);
         clients.remove(clientHandler);
+    }
+    public void changeNick(ClientHandler client, String newNick) {
+        broadcastMsg(client.getNick() + " сменил ник на " +newNick, client);
+        client.setNick(newNick);
     }
 
 }
