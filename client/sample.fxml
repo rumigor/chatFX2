@@ -4,23 +4,56 @@
 <?import javafx.scene.layout.*?>
 
 <?import java.net.URL?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.2-internal" fx:controller="client.Controller">
     <stylesheets>
         <URL value="@/css/style.css"/>
     </stylesheets>
-
+        <MenuBar fx:id="menu" visible="false" managed="false">
+            <Menu text="Чат">
+                <MenuItem onAction="#changeNick" text="Изменить ник" />
+                <MenuItem onAction="#offline" text="Выйти из чата" />
+            </Menu>
+            <Menu text="Редактировать">
+                <MenuItem onAction="#copyText" text="Копировать"/>
+                <MenuItem onAction="#pasteText" text="Вставить" />
+                <MenuItem onAction="#cutText" text="Вырезать" />
+            </Menu>
+        </MenuBar>
     <HBox fx:id="authPanel">
-        <TextField fx:id="loginField"  promptText="login" HBox.hgrow="ALWAYS" />
-        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS" />
-        <Button minWidth="100" onAction="#tryToAuth" text="Enter chat" />
+        <TextField fx:id="loginField"  promptText="login" HBox.hgrow="ALWAYS" minHeight="35"/>
+        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS" minHeight="35"/>
+        <Button minWidth="100" onAction="#tryToAuth" text="Enter chat" minHeight="35"/>
     </HBox>
     <HBox>
-        <TextArea fx:id="textArea" editable="false" minWidth="540" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" minHeight="485"/>
+        <TextArea fx:id="textArea" editable="false" minWidth="520" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" minHeight="455"/>
         <TextArea fx:id="clientList" editable="false" managed="false" visible="false" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
     </HBox>
     <HBox fx:id="msgPanel" managed="false" visible="false">
-        <TextField fx:id="textField" onAction="#sendMsg" promptText="input message" HBox.hgrow="ALWAYS" />
-        <Button onAction="#sendMsg" text="Send" minWidth="100"/>
+        <TextField fx:id="textField" onAction="#sendMsg" promptText="input message" HBox.hgrow="ALWAYS" minHeight="30"/>
+        <ComboBox fx:id="smilesBox" value="Smiles🙂" onAction="#smilesAdd" minHeight="30">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="🐱" />
+                    <String fx:value="😀"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😜"/>
+                    <String fx:value="😷"/>
+                    <String fx:value="😡"/>
+                    <String fx:value="💩"/>
+                    <String fx:value="☠"/>
+                    <String fx:value="👍"/>
+                    <String fx:value="👎"/>
+                    <String fx:value="🌹"/>
+                    <String fx:value="😘"/>
+                    <String fx:value="🤔"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button onAction="#sendMsg" text="Send" minWidth="100" minHeight="30"/>
     </HBox>
 
 </VBox>

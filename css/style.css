@@ -1,3 +1,8 @@
+.root {
+
+-fx-background: #FFFACD;
+}
+
 .button{
     -fx-background-color: #FFDAB9;
     -fx-font-size: 12px;
@@ -15,6 +20,7 @@
 
 #clientList {
     -fx-font-weight: bold;
+    -fx-font-size: 12px;
 
 }
 #textArea .content {
@@ -22,4 +28,29 @@
 
 }
 
+#textArea {
+ -fx-font-size: 12px;
 
+}
+
+#smilesBox {
+    -fx-background-color: #48D1CC;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+#smilesBox : hover {
+    -fx-background-color: #00FFFF;
+}
+
+.menu-bar {
+    -fx-background-color: #F0E68C;
+}
+.menu-bar .label {
+    -fx-font-size: 12.0 pt;
+
+}
+
+.menu-item {
+    -fx-background: #8FBC8F;
+}
