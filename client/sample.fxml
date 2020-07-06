@@ -1,28 +1,26 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
-<VBox fx:controller="client.Controller"
-      xmlns:fx="http://javafx.com/fxml" alignment="center" >
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.2-internal" fx:controller="client.Controller">
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
 
     <HBox fx:id="authPanel">
-        <TextField fx:id="loginField" HBox.hgrow="ALWAYS" promptText="login"/>
-        <PasswordField fx:id="passwordField" HBox.hgrow="ALWAYS" promptText="password" onAction="#tryToAuth"/>
-        <Button text="Enter" onAction="#tryToAuth" minWidth="50"/>
+        <TextField fx:id="loginField"  promptText="login" HBox.hgrow="ALWAYS" />
+        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS" />
+        <Button minWidth="100" onAction="#tryToAuth" text="Enter chat" />
     </HBox>
-
-    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false"/>
-
-    <HBox fx:id="msgPanel" visible="false" managed="false">
-        <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="input message"
-        onAction="#sendMsg"/>
-        <Button text="Send" onAction="#sendMsg"/>
+    <HBox>
+        <TextArea fx:id="textArea" editable="false" minWidth="540" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" minHeight="485"/>
+        <TextArea fx:id="clientList" editable="false" managed="false" visible="false" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+    </HBox>
+    <HBox fx:id="msgPanel" managed="false" visible="false">
+        <TextField fx:id="textField" onAction="#sendMsg" promptText="input message" HBox.hgrow="ALWAYS" />
+        <Button onAction="#sendMsg" text="Send" minWidth="100"/>
     </HBox>
 
 </VBox>

@@ -32,11 +32,14 @@ public class Controller implements Initializable {
     public HBox authPanel;
     @FXML
     public HBox msgPanel;
+    @FXML
+    public TextArea clientList;
 
 
     private final int PORT = 8189;
     private final String IP_ADDRESS = "localhost";
     private final String CHAT_TITLE_EMPTY = "Java-chat v.1.0";
+
 
     private Socket socket;
     private DataInputStream in;
@@ -53,6 +56,8 @@ public class Controller implements Initializable {
         authPanel.setManaged(!authenticated);
         msgPanel.setVisible(authenticated);
         msgPanel.setManaged(authenticated);
+        clientList.setVisible(authenticated);
+        clientList.setManaged(authenticated);
         if (!authenticated) {
             nick = "";
         }
@@ -110,10 +115,20 @@ public class Controller implements Initializable {
 
                         if (str.equals("/end")) {
                             setAuthenticated(false);
+                            textArea.clear();
                             break;
                         }
+                        if (str.startsWith("/clientList")) {
+                            String [] msg = str.split("\\s");
+                            clientList.clear();
+                            clientList.appendText("Список участников чата:\n");
+                            for (int i = 2; i < msg.length; i++) {
+                                clientList.appendText(msg[i] + "\n");
+                            }
 
-                        textArea.appendText(str + "\n");
+                        } else {
+                            textArea.appendText(str + "\n");
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -141,6 +156,11 @@ public class Controller implements Initializable {
     public void sendMsg(ActionEvent actionEvent) {
         try {
             out.writeUTF(textField.getText());
+            if (textField.getText().startsWith("/chgnick")) {
+                String [] msg = textField.getText().split("\\s");
+                System.out.println(msg[1]);
+                setTitle(msg[1]);
+            }
             textField.requestFocus();
             textField.clear();
         } catch (IOException e) {
@@ -166,4 +186,6 @@ public class Controller implements Initializable {
             stage.setTitle(CHAT_TITLE_EMPTY + " : " + nick);
         });
     }
+
+
 }

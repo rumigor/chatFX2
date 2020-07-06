@@ -26,8 +26,9 @@ public class ClientHandler {
             new Thread(() -> {
                 try {
                     //цикл аутентификации
+                    String str = "";
                     while (true) {
-                        String str = in.readUTF();
+                        str = in.readUTF();
                         if (str.startsWith("/auth")) {
                             String[] token = str.split("\\s");
                             System.out.println(Arrays.toString(token));
@@ -38,22 +39,30 @@ public class ClientHandler {
                                     .getAuthService()
                                     .getNicknameByLoginAndPassword(token[1], token[2]);
                             if (newNick != null) {
-                                sendMsg("/authok " + newNick);
-                                nick = newNick;
-                                login = token[2];
-                                server.subscribe(this);
-                                System.out.printf("Клиент %s подключился \n", nick);
-                                break;
+                                boolean isNickBusy = false;
+                                for (int i = 0; i < server.clients.size(); i++) {
+                                    if (newNick.equals(server.clients.get(i).getNick())) {
+                                        sendMsg("Пользователь с таким логином и паролем уже вошел в чат!");
+                                        isNickBusy = true;
+                                        break;
+                                    }
+                                }
+                                if (!isNickBusy) {
+                                    sendMsg("/authok " + newNick);
+                                    nick = newNick;
+                                    login = token[2];
+                                    server.subscribe(this);
+                                    System.out.printf("Клиент %s подключился \n", nick);
+                                    break;
+                                }
                             } else {
                                 sendMsg("Неверный логин / пароль");
                             }
                         }
-
-                        server.broadcastMsg(str, this);
                     }
                     //цикл работы
                     while (true) {
-                        String str = in.readUTF();
+                        str = in.readUTF();
                         String [] msg = str.split("\\s");
                         if (msg[0].equals("/end")) {
                             out.writeUTF("/end");
