@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -11,9 +12,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Java-chat v.1.0");
-        primaryStage.setScene(new Scene(root, 700, 500));
-        primaryStage.setResizable(false);
+        primaryStage.setTitle("Java-chat v.1.1");
+        Scene scene = new Scene(root, 700, 500);
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(true);
         primaryStage.show();
     }
 

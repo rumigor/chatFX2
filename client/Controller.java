@@ -4,14 +4,20 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -32,7 +38,7 @@ public class Controller implements Initializable {
     @FXML
     public HBox msgPanel;
     @FXML
-    public TextArea clientList;
+    public ListView<String > clientList;
     @FXML
     public ComboBox <String> smilesBox;
     @FXML
@@ -51,8 +57,10 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nick;
-
     private Stage stage;
+    private Stage regStage;
+    RegController regController;
+
 
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -68,6 +76,7 @@ public class Controller implements Initializable {
             nick = "";
         }
         setTitle(nick);
+        textArea.clear();
     }
 
     @Override
@@ -89,7 +98,7 @@ public class Controller implements Initializable {
             });
         });
         setAuthenticated(false);
-
+        regStage = createRegWindow();
     }
 
     private void connect() {
@@ -110,6 +119,15 @@ public class Controller implements Initializable {
                             break;
                         }
 
+                        if (str.startsWith("/regresult ")) {
+                            String result = str.split("\\s")[1];
+                            if (result.equals("ok")) {
+                                regController.addMessage("Регистрация прошла успешно");
+                            } else {
+                                regController.addMessage("Регистрация не получилась, возможно логин или никнейм заняты");
+                            }
+                        }
+
                         textArea.appendText(str + "\n");
                     }
 
@@ -124,17 +142,23 @@ public class Controller implements Initializable {
                             break;
                         }
                         if (str.startsWith("/clientList")) {
-                            String [] msg = str.split("\\s");
-                            clientList.clear();
-                            clientList.appendText("Список участников чата:\n");
-                            for (int i = 2; i < msg.length; i++) {
-                                clientList.appendText(msg[i] + "\n");
-                            }
+                            String[] token = str.split("\\s");
+                            Platform.runLater(() -> {
+                                clientList.getItems().clear();
+                                clientList.getItems().add("Список пользователей:");
+                                for (int i = 2; i < token.length; i++) {
+                                    clientList.getItems().add(token[i]);
+                                }
+                            });
+                            if (str.startsWith("/chgnick")) {
 
+                            }
                         } else {
                             textArea.appendText(str + "\n");
                         }
                     }
+                } catch (EOFException e) {
+                    System.out.println("ошибка чтения из-за потери соединения");;
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -232,5 +256,48 @@ public class Controller implements Initializable {
 
     public void cutText(ActionEvent actionEvent) {
         textField.cut();
+    }
+
+    public void clickClientList(MouseEvent mouseEvent) {
+        if (clientList.getSelectionModel().getSelectedItem().equals("Список пользователей:") || clientList.getSelectionModel().getSelectedItem().equals(nick)) {
+            return;
+        }
+        String receiver = clientList.getSelectionModel().getSelectedItem();
+        textField.setText(String.format("/w %s ", receiver));
+    }
+
+    public void showRegWindow(ActionEvent actionEvent) {
+        regStage.show();
+    }
+
+    private Stage createRegWindow() {
+        Stage stage = new Stage();
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("reg.fxml"));
+            Parent root = fxmlLoader.load();
+
+            stage.setTitle("Chat reg window");
+            stage.setScene(new Scene(root, 300, 150));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+
+            regController = fxmlLoader.getController();
+            regController.setController(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stage;
+    }
+    public void tryToReg(String login, String password, String nickname) {
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        try {
+            out.writeUTF(String.format("/reg %s %s %s", login, password, nickname));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

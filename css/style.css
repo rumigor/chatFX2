@@ -1,30 +1,43 @@
 .root {
 
--fx-background: #FFFACD;
+-fx-background: #F0FFFF;
 }
 
 .button{
-    -fx-background-color: #FFDAB9;
+    -fx-background-color: #00CED1;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-text-align: center;
 }
 
+#cancelButton{
+    -fx-background-color: #CD5C5C;
+}
+
+#cancelButton:hover{
+    -fx-background-color: #FF4500;
+}
 
 .button:hover {
-     -fx-background-color: #c5ff10;
+     -fx-background-color: #6495ED;
  }
 
-#clientList .content {
-    -fx-background-color: #FFFFF0;
-}
-
-#clientList {
+.list-view .list-cell:even {
+    -fx-background-color: #F0F8FF;
+    -fx-text-fill: black;
     -fx-font-weight: bold;
-    -fx-font-size: 12px;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: #B0E0E6;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+}
+.list-view .list-cell:hover {
+    -fx-background-color: #66CDAA;
 
 }
 #textArea .content {
-    -fx-background-color: #FFFACD;
+    -fx-background-color: #F0FFFF;
 
 }
 
@@ -34,7 +47,7 @@
 }
 
 #smilesBox {
-    -fx-background-color: #48D1CC;
+    -fx-background-color: #FFFACD;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
@@ -44,7 +57,7 @@
 }
 
 .menu-bar {
-    -fx-background-color: #F0E68C;
+    -fx-background-color: #87CEFA;
 }
 .menu-bar .label {
     -fx-font-size: 12.0 pt;
@@ -52,5 +65,5 @@
 }
 
 .menu-item {
-    -fx-background: #8FBC8F;
+    -fx-background: #4682B4;
 }

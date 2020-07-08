@@ -49,12 +49,13 @@ public class Server {
         }
     }
 
-    void broadcastMsg(String msg, ClientHandler clientHandler){
-        if (!msg.startsWith(clientHandler.getNick())) {
-            msg = clientHandler.getNick() + ": " + msg;
+    void broadcastMsg(String msg, ClientHandler sender){
+        String message = msg;
+        if (!msg.startsWith(sender.getNick())) {
+             message = String.format("%s: %s", sender.getNick(), msg);
         }
         for (ClientHandler client : clients) {
-                client.sendMsg(msg);
+                client.sendMsg(message);
             }
     }
 
@@ -64,11 +65,13 @@ public class Server {
             return;
         }
         else {
+            if (nickname.equals(client.getNick())) {return;}
             boolean isNickNameValid = false;
+            String message = String.format("%s %s %s: %s", client.getNick(), "приватно для", nickname, msg);
             for (ClientHandler anotherClient : clients) {
                 if (nickname.equals(anotherClient.getNick())) {
-                    anotherClient.sendMsg("Сообщение от " + client.getNick() + ": "+ msg);
-                    client.sendMsg("Вы приватно для " + anotherClient.getNick() + ": " + msg);
+                    anotherClient.sendMsg(message);
+                    client.sendMsg(message);
                     isNickNameValid = true;
                     break;
                 }
@@ -94,6 +97,12 @@ public class Server {
         broadcastClientsList();
     }
     public void changeNick(ClientHandler client, String newNick) {
+        for (ClientHandler c : clients) {
+            if (c.getNick().equals(newNick)) {
+                privateMsg("сервера", client, "данный никнейм уже занят");
+                return;
+            }
+        }
         broadcastMsg(client.getNick() + " сменил ник на " +newNick, client);
         client.setNick(newNick);
         broadcastClientsList();
@@ -107,6 +116,15 @@ public class Server {
         for (ClientHandler client : clients) {
             client.sendMsg("/clientList " + sb.toString());
         }
+    }
+
+    public boolean isLoginAuthorized(String login){
+        for (ClientHandler c : clients) {
+            if(c.getLogin().equals(login)){
+                return true;
+            }
+        }
+        return false;
     }
 
 
