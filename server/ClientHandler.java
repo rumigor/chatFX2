@@ -31,7 +31,7 @@ public class ClientHandler {
                     while (true) {
                         String str = in.readUTF();
                         if (str.startsWith("/auth ")) {
-                            socket.setSoTimeout(120000);
+                            socket.setSoTimeout(120000); //проверяем активность клиента
                             String[] token = str.split("\\s");
                             if (token.length < 3) {
                                 continue;
@@ -46,7 +46,7 @@ public class ClientHandler {
                                     sendMsg("/authok " + newNick);
                                     nick = newNick;
                                     server.subscribe(this);
-                                    socket.setSoTimeout(0);
+                                    socket.setSoTimeout(0); //если вошли, сбрасываем счетчик, иначе через 120 сек может выкинуть из чата
                                     isSubscribed = true;
                                     System.out.printf("Клиент %s подключился \n", nick);
                                     break;
