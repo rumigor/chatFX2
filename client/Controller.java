@@ -1,16 +1,20 @@
 package client;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -25,8 +29,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
-    @FXML
-    public TextArea textArea;
+//    @FXML
+//    public TextArea textArea;
     @FXML
     public TextField textField;
     @FXML
@@ -43,6 +47,10 @@ public class Controller implements Initializable {
     public ComboBox <String> smilesBox;
     @FXML
     public MenuBar menu;
+    @FXML
+    public TextFlow chatText;
+    @FXML
+    public ScrollPane sp;
 
 
     private final int PORT = 8189;
@@ -62,6 +70,7 @@ public class Controller implements Initializable {
     RegController regController;
 
 
+
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
         authPanel.setVisible(!authenticated);
@@ -76,7 +85,7 @@ public class Controller implements Initializable {
             nick = "";
         }
         setTitle(nick);
-        textArea.clear();
+        Platform.runLater(() -> chatText.getChildren().clear());
     }
 
     @Override
@@ -127,34 +136,89 @@ public class Controller implements Initializable {
                                 regController.addMessage("Регистрация не получилась, возможно логин или никнейм заняты");
                             }
                         }
-
-                        textArea.appendText(str + "\n");
+                        Platform.runLater(() -> {
+                            Text text1 = new Text(str + "\n");
+                            text1.setFill(Color.BLACK);
+                            text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
+                            chatText.getChildren().addAll(text1);
+                            sp.setVvalue( 1.0d );
+                        });
                     }
 
 
                     //цикл работы
                     while (true) {
                         String str = in.readUTF();
+                        if (str.startsWith("/")) {
+                            if (str.equals("/end")) {
+                                setAuthenticated(false);
+                                Platform.runLater(() -> chatText.getChildren().clear());
+                                break;
+                            }
 
-                        if (str.equals("/end")) {
-                            setAuthenticated(false);
-                            textArea.clear();
-                            break;
-                        }
-                        if (str.startsWith("/clientList")) {
-                            String[] token = str.split("\\s");
-                            Platform.runLater(() -> {
-                                clientList.getItems().clear();
-                                clientList.getItems().add("Список пользователей:");
-                                for (int i = 2; i < token.length; i++) {
-                                    clientList.getItems().add(token[i]);
-                                }
-                            });
-                            if (str.startsWith("/chgnick")) {
+                            if (str.startsWith("/clientList")) {
+                                String[] token = str.split("\\s");
+                                Platform.runLater(() -> {
+                                    clientList.getItems().clear();
+                                    clientList.getItems().add("Список пользователей:");
+                                    for (int i = 2; i < token.length; i++) {
+                                        clientList.getItems().add(token[i]);
+                                    }
+                                });
 
                             }
-                        } else {
-                            textArea.appendText(str + "\n");
+                            if (str.startsWith("/chgnick")) {
+                                String[] token = str.split("\\s", 2);
+                                nick = token[2];
+                                setTitle(nick);
+                            }
+                        }
+                        else {
+                            Platform.runLater(() -> {
+                                if (str.startsWith("Сообщение от")) {
+                                    String[] token = str.split("\\s", 4);
+                                    Text text1 = new Text(str + "\n");
+                                    text1.setFill(Color.BLACK);
+                                    text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
+                                    chatText.getChildren().addAll(text1);
+                                    sp.setVvalue( 1.0d );
+                                }
+                                else {
+                                    String[] token = str.split("\\s", 2);
+                                    if (token[0].endsWith(":")) {
+                                        Text nickname = new Text();
+                                        if (token[0].equals(nick+":")) {
+                                            nickname = new Text("Я: ");
+                                            nickname.setFill(Color.rgb(255,165,0));
+                                        } else {
+                                            nickname = new Text(token[0] + " ");
+                                            nickname.setFill(Color.rgb(50,205,50));
+                                        }
+                                        nickname.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
+                                        Text msg = new Text(token[1] + "\n");
+                                        msg.setFill(Color.BLACK);
+                                        msg.setFont(Font.font("Helvetica", FontWeight.NORMAL, 12));
+                                        chatText.getChildren().addAll(nickname, msg);
+                                        sp.setVvalue( 1.0d );
+                                    } else if (token[1].startsWith("приватно")) {
+                                        token = str.split("\\s", 5);
+                                        String nickText = String.format("%s %s %s %s ", token[0], token[1], token[2], token[3]);
+                                        Text nickname = new Text(nickText);
+                                        nickname.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
+                                        nickname.setFill(Color.rgb(255, 99, 71));
+                                        Text msg = new Text(token[4] + "\n");
+                                        msg.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
+                                        chatText.getChildren().addAll(nickname, msg);
+                                        sp.setVvalue( 1.0d );
+                                    } else {
+                                        Text text1 = new Text(str + "\n");
+                                        text1.setFill(Color.BLACK);
+                                        text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
+                                        chatText.getChildren().addAll(text1);
+                                        sp.setVvalue( 1.0d );
+                                    }
+                                }
+                            });
                         }
                     }
                 } catch (EOFException e) {
