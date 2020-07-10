@@ -117,6 +117,8 @@ public class Controller implements Initializable {
                             nick = str.split("\\s")[1];
                             setAuthenticated(true);
                             break;
+                        } else if (str.equals("Неверный логин / пароль")|| str.equals("С этим логином уже авторизовались")) {
+                            textArea.appendText(str + "\n");
                         }
 
                         if (str.startsWith("/regresult ")) {
@@ -127,13 +129,18 @@ public class Controller implements Initializable {
                                 regController.addMessage("Регистрация не получилась, возможно логин или никнейм заняты");
                             }
                         }
-
-                        textArea.appendText(str + "\n");
+                        if (str.equals("/end")) {
+                            setAuthenticated(false);
+                            textArea.clear();
+                            in.close();
+                            out.close();
+                            break;
+                        }
                     }
 
 
                     //цикл работы
-                    while (true) {
+                    while (!socket.isClosed()) {
                         String str = in.readUTF();
 
                         if (str.equals("/end")) {
@@ -157,8 +164,6 @@ public class Controller implements Initializable {
                             textArea.appendText(str + "\n");
                         }
                     }
-                } catch (EOFException e) {
-                    System.out.println("ошибка чтения из-за потери соединения");;
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
