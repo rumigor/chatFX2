@@ -1,13 +1,11 @@
 package client;
 
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,7 +19,6 @@ import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -126,6 +123,14 @@ public class Controller implements Initializable {
                             nick = str.split("\\s")[1];
                             setAuthenticated(true);
                             break;
+                        } else if (str.equals("Неверный логин / пароль") || str.equals("С этим логином уже авторизовались")) {
+                            Platform.runLater(() -> {
+                                Text text1 = new Text(str + "\n");
+                                text1.setFill(Color.BLACK);
+                                text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
+                                chatText.getChildren().addAll(text1);
+                                sp.setVvalue( 1.0d );
+                            });
                         }
 
                         if (str.startsWith("/regresult ")) {
@@ -136,18 +141,16 @@ public class Controller implements Initializable {
                                 regController.addMessage("Регистрация не получилась, возможно логин или никнейм заняты");
                             }
                         }
-                        Platform.runLater(() -> {
-                            Text text1 = new Text(str + "\n");
-                            text1.setFill(Color.BLACK);
-                            text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
-                            chatText.getChildren().addAll(text1);
-                            sp.setVvalue( 1.0d );
-                        });
+                        if (str.equals("/end")) {
+                            setAuthenticated(false);
+                            out.close();
+                            in.close();
+                            Platform.runLater(() -> chatText.getChildren().clear());
+                            break;
+                        }
                     }
 
-
-                    //цикл работы
-                    while (true) {
+                    while (!socket.isClosed()) {
                         String str = in.readUTF();
                         if (str.startsWith("/")) {
                             if (str.equals("/end")) {
@@ -221,8 +224,6 @@ public class Controller implements Initializable {
                             });
                         }
                     }
-                } catch (EOFException e) {
-                    System.out.println("ошибка чтения из-за потери соединения");;
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

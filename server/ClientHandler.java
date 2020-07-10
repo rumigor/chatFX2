@@ -27,11 +27,10 @@ public class ClientHandler {
 
             new Thread(() -> {
                 try {
-
+                    socket.setSoTimeout(5000); //проверяем активность клиента
                     while (true) {
                         String str = in.readUTF();
                         if (str.startsWith("/auth ")) {
-                            socket.setSoTimeout(120000); //проверяем активность клиента
                             String[] token = str.split("\\s");
                             if (token.length < 3) {
                                 continue;
@@ -105,6 +104,7 @@ public class ClientHandler {
                 } catch (SocketTimeoutException e) {
                     System.out.println("Клиент не активен более 120 секунд");
                     server.privateMsg("сервера", this, "Соедиение с сервером прервано из-за неактивности клиента");
+                    sendMsg("/end");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
