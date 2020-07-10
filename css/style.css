@@ -22,20 +22,28 @@
      -fx-background-color: #00FFFF;
  }
 
-.list-view .list-cell:even {
+#clientList .list-cell:even {
     -fx-background-color: #F0F8FF;
     -fx-text-fill: black;
     -fx-font-weight: bold;
 }
-.list-view .list-cell:odd {
+#clientList .list-cell:odd {
     -fx-background-color: #B0E0E6;
     -fx-text-fill: black;
     -fx-font-weight: bold;
 }
-.list-view .list-cell:hover {
+#clientList .list-cell:hover {
     -fx-background-color: #66CDAA;
-
 }
+#chatText .list-cell:even{
+    -fx-background-color: #37B6CE;
+}
+
+#chatText .list-cell:odd{
+    -fx-background-color: #F0FFFF;
+}
+
+
 #textArea .content {
     -fx-background-color: #F0FFFF;
 

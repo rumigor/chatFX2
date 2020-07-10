@@ -45,9 +45,7 @@ public class Controller implements Initializable {
     @FXML
     public MenuBar menu;
     @FXML
-    public TextFlow chatText;
-    @FXML
-    public ScrollPane sp;
+    public ListView<Text> chatText;
 
 
     private final int PORT = 8189;
@@ -82,7 +80,7 @@ public class Controller implements Initializable {
             nick = "";
         }
         setTitle(nick);
-        Platform.runLater(() -> chatText.getChildren().clear());
+        Platform.runLater(() -> chatText.getItems().clear());
     }
 
     @Override
@@ -128,8 +126,7 @@ public class Controller implements Initializable {
                                 Text text1 = new Text(str + "\n");
                                 text1.setFill(Color.BLACK);
                                 text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
-                                chatText.getChildren().addAll(text1);
-                                sp.setVvalue( 1.0d );
+                                chatText.getItems().add(text1);
                             });
                         }
 
@@ -145,7 +142,7 @@ public class Controller implements Initializable {
                             setAuthenticated(false);
                             out.close();
                             in.close();
-                            Platform.runLater(() -> chatText.getChildren().clear());
+                            Platform.runLater(() -> chatText.getItems().clear());
                             break;
                         }
                     }
@@ -155,7 +152,7 @@ public class Controller implements Initializable {
                         if (str.startsWith("/")) {
                             if (str.equals("/end")) {
                                 setAuthenticated(false);
-                                Platform.runLater(() -> chatText.getChildren().clear());
+                                Platform.runLater(() -> chatText.getItems().clear());
                                 break;
                             }
 
@@ -183,8 +180,7 @@ public class Controller implements Initializable {
                                     Text text1 = new Text(str + "\n");
                                     text1.setFill(Color.BLACK);
                                     text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
-                                    chatText.getChildren().addAll(text1);
-                                    sp.setVvalue( 1.0d );
+                                    chatText.getItems().add(text1);
                                 }
                                 else {
                                     String[] token = str.split("\\s", 2);
@@ -201,8 +197,7 @@ public class Controller implements Initializable {
                                         Text msg = new Text(token[1] + "\n");
                                         msg.setFill(Color.BLACK);
                                         msg.setFont(Font.font("Helvetica", FontWeight.NORMAL, 12));
-                                        chatText.getChildren().addAll(nickname, msg);
-                                        sp.setVvalue( 1.0d );
+                                        chatText.getItems().addAll(nickname, msg);
                                     } else if (token[1].startsWith("приватно")) {
                                         token = str.split("\\s", 5);
                                         String nickText = String.format("%s %s %s %s ", token[0], token[1], token[2], token[3]);
@@ -211,14 +206,12 @@ public class Controller implements Initializable {
                                         nickname.setFill(Color.rgb(255, 99, 71));
                                         Text msg = new Text(token[4] + "\n");
                                         msg.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
-                                        chatText.getChildren().addAll(nickname, msg);
-                                        sp.setVvalue( 1.0d );
+                                        chatText.getItems().addAll(nickname, msg);
                                     } else {
                                         Text text1 = new Text(str + "\n");
                                         text1.setFill(Color.BLACK);
                                         text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 12));
-                                        chatText.getChildren().addAll(text1);
-                                        sp.setVvalue( 1.0d );
+                                        chatText.getItems().addAll(text1);
                                     }
                                 }
                             });
@@ -297,10 +290,12 @@ public class Controller implements Initializable {
         result.ifPresent(name -> {
             try {
                 out.writeUTF("/chgnick " + name);
+                nick = name;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+        setTitle(nick);
         }
 
     public void offline(ActionEvent actionEvent) {

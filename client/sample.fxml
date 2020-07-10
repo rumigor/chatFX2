@@ -29,11 +29,8 @@
         <Button text="Reg" onAction="#showRegWindow" minWidth="100"/>
     </HBox>
     <HBox VBox.vgrow="ALWAYS" >
-        <ScrollPane fx:id="sp" minWidth="520" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
-            <content>
-                <TextFlow fx:id="chatText"   VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
-            </content>
-        </ScrollPane>
+
+        <ListView fx:id="chatText" minWidth="520"   VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
         <ListView fx:id="clientList" minWidth="100" visible="false" managed="false"
                   onMouseReleased="#clickClientList" />
     </HBox>
