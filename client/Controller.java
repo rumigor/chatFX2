@@ -237,6 +237,8 @@ public class Controller implements Initializable {
         result.ifPresent(name -> {
             try {
                 out.writeUTF("/chgnick " + name);
+                nick = name;
+                setTitle(nick);
             } catch (IOException e) {
                 e.printStackTrace();
             }
