@@ -1,28 +1,66 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
-<VBox fx:controller="client.Controller"
-      xmlns:fx="http://javafx.com/fxml" alignment="center" >
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
+<?import java.net.URL?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.scene.text.TextFlow?>
+<VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.2-internal" fx:controller="client.Controller">
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+        <MenuBar fx:id="menu" visible="false" managed="false">
+            <Menu text="Чат">
+                <MenuItem onAction="#changeNick" text="Изменить ник" />
+                <MenuItem onAction="#offline" text="Выйти из чата" />
+            </Menu>
+            <Menu text="Редактировать">
+                <MenuItem onAction="#copyText" text="Копировать"/>
+                <MenuItem onAction="#pasteText" text="Вставить" />
+                <MenuItem onAction="#cutText" text="Вырезать" />
+            </Menu>
+        </MenuBar>
     <HBox fx:id="authPanel">
         <TextField fx:id="loginField" HBox.hgrow="ALWAYS" promptText="login"/>
         <PasswordField fx:id="passwordField" HBox.hgrow="ALWAYS" promptText="password" onAction="#tryToAuth"/>
-        <Button text="Enter" onAction="#tryToAuth" minWidth="50"/>
+        <Button text="Enter" onAction="#tryToAuth" minWidth="100"/>
+        <Button text="Reg" onAction="#showRegWindow" minWidth="100"/>
     </HBox>
-
-    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false"/>
-
-    <HBox fx:id="msgPanel" visible="false" managed="false">
-        <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="input message"
-        onAction="#sendMsg"/>
-        <Button text="Send" onAction="#sendMsg"/>
+    <HBox VBox.vgrow="ALWAYS" >
+        <ScrollPane fx:id="sp" minWidth="520" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+            <content>
+                <TextFlow fx:id="chatText"   VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
+            </content>
+        </ScrollPane>
+        <ListView fx:id="clientList" minWidth="100" visible="false" managed="false"
+                  onMouseReleased="#clickClientList" />
+    </HBox>
+    <HBox fx:id="msgPanel" managed="false" visible="false">
+        <TextField fx:id="textField" onAction="#sendMsg" promptText="input message" HBox.hgrow="ALWAYS" minWidth="480"/>
+        <ComboBox fx:id="smilesBox" value="Smiles🙂" onAction="#smilesAdd" minWidth="90">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="🐱" />
+                    <String fx:value="😀"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😉"/>
+                    <String fx:value="😜"/>
+                    <String fx:value="😷"/>
+                    <String fx:value="😡"/>
+                    <String fx:value="💩"/>
+                    <String fx:value="☠"/>
+                    <String fx:value="👍"/>
+                    <String fx:value="👎"/>
+                    <String fx:value="🌹"/>
+                    <String fx:value="😘"/>
+                    <String fx:value="🤔"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button onAction="#sendMsg" text="Send" minWidth="120"/>
     </HBox>
 
 </VBox>
